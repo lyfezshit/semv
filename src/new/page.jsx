@@ -2,74 +2,95 @@ import { useState } from "react";
 
 
 export const Page = () => {
-    const [query, setQuery] = useState("");
-    const [type, setType] = useState("movie"); // 'movie' or 'series'
+    const [postId, setPostId] = useState("");
+    const [type, setType] = useState("movie"); 
     const [data, setData] = useState(null);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const API_KEY = "DEMOTEMPAPI";
+    
 
     const fetchData = async () => {
         setError("");
         setData(null);
+        setIsLoading(true);
+        
+        if (!postId) {
+            setError("Please enter a valid post Id.");
+            return;
+        }
 
-        const endpoint =
+       
+        const API_KEY = "DEMOTEMPAPI";
+        const baseURL =
             type === "movie"
                 ? "https://links.modpro.blog/wp-json/wp/clenc/files"
                 : "https://episodes.modpro.blog/wp-json/wp/clenc/files";
 
-        const url = `${endpoint}?api_key=${API_KEY}&t=${encodeURIComponent(query)}`;
+        
+
 
         try {
+            const url = `${baseURL}?api_key=${API_KEY}&id=${postId}`;
             const res = await fetch(url);
             const result = await res.json();
 
-            if (result.Response === "False" || !result.ID) {
+            if (!result||!result.Title ) {
                 setError("Sorry! Cannot find what you're looking for.");
             } else {
                 setData(result);
             }
-        } catch {
+        } catch (err){
             setError("Something went wrong.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="Page">
-            <h1>🎬 Search Movies or Series</h1>
+        <div className="bg-amber-300 min-h-screen">
+            <h1 className=" flex justify-center items-center text-3xl  " >🎬 Search Movies or Series</h1>
 
             <div>
-                <select value={type} onChange={(e) => setType(e.target.value)}>
+                <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg">
                     <option value="movie">Movie</option>
                     <option value="series">Series</option>
                 </select>
                 <input
+                    className="px-3 py-2"
                     type="text"
-                    placeholder="Enter title..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Enter post ID..."
+                    value={postId}
+                    onChange={(e) => setPostId(e.target.value)}
                 />
-                <button onClick={fetchData}>Search</button>
+                <button className="mt=3" onClick={fetchData} disabled={isLoading}>{isLoading ? "Searching..." : "Search" }</button>
             </div>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
+            {isLoading && <p className="">Loading...</p>}
 
             {data && (
-                <div className="result-card">
-                    <h2>{data.Title} ({data.Year})</h2>
-                    <p><strong>ID:</strong> {data.ID}</p>
-                    <img src={data.Poster} alt={data.Title} width="200" />
+                <div className="">
+                    <h2>{data.Title} ({data.Year})</h2> 
+                    <p><strong>Post ID:</strong>{postId}</p>
 
-                    <div className="server-links">
-                        <p>🔗 Streaming Links:</p>
-                        {(data.files || []).map((file, i) => (
-                            <div key={i}>
-                                <a href={file.link} target="_blank" rel="noopener noreferrer">
-                                    {file.name || `Server ${i + 1}`}
+
+                    {data.links?.length>0? (
+
+                        <div className="">
+                            <p>🔗 Streaming Links:</p>
+                            {data.links.map((link, index) => (
+                            
+                                <a key={index} href={link.url||"#"} target="_blank" rel="noopener noreferrer">
+                                    {link.name || `Server ${index + 1}`}
                                 </a>
-                            </div>
-                        ))}
-                    </div>
+                            
+                            ))}
+                        </div>
+                    ) : (
+                            <p>No links available.</p>
+                    
+                   ) }  
                 </div>
             )}
         </div>
