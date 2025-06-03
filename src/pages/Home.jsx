@@ -55,13 +55,12 @@ export const Home = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-slate-900 text-gray-100 p-4 sm:p-10 flex flex-col items-center">
-			{/* The main header was removed as per previous comments. */}
-			{/* If a header is needed, it can be re-added here. */}
-			{/* e.g., <h1 className="text-3xl font-mono mb-8 text-emerald-400">🎬 Movie/Series Search</h1> */}
 
-			<div className="w-full max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
-				<div className="flex flex-col sm:flex-row gap-4 mb-6">
+		<div className="min-h-screen bg-slate-900 text-gray-100 ">
+		
+			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6">
+				<h1 className=" px-2 py-2 font-mono text-xl ">SEMV</h1>
+				<div className="flex items-center gap-4">
 					<select
 						value={type}
 						onChange={(e) => setType(e.target.value)}
@@ -72,7 +71,7 @@ export const Home = () => {
 					</select>
 
 					<input
-						className="w-full px-3 py-2 rounded-lg flex-grow bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+						className=" px-4 py-2 rounded-lg  bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
 						type="text"
 						placeholder="Enter post ID..."
 						value={postId}
@@ -86,7 +85,21 @@ export const Home = () => {
 					>
 						{isLoading ? "Searching..." : "Search"}
 					</button>
-				</div>
+					</div>
+				</nav>
+		
+		<div className=" p-4 sm:p-10 flex flex-col items-center">
+			{/* The main header was removed as per previous comments. */}
+			{/* If a header is needed, it can be re-added here. */}
+			{/* e.g., <h1 className="text-3xl font-mono mb-8 text-emerald-400">🎬 Movie/Series Search</h1> */}
+			
+				
+		  
+			
+
+				<div className="w-full max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
+					<h1 className="font-mono  text-gray-500">Find your movies</h1>
+				
 
 				{error && (
 					<p className="text-red-300 p-3 mb-6 bg-red-700/30 border border-red-600 rounded-lg text-sm">
@@ -154,6 +167,7 @@ export const Home = () => {
 					</div>
 				)}
 			</div>
-		</div>
+			</div>
+			</div>
 	);
 };
