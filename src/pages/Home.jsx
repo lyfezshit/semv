@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const Page = () => {
+export const Home = () => {
     const [postId, setPostId] = useState("");
     const [type, setType] = useState("movie"); 
     const [data, setData] = useState(null);
