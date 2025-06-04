@@ -53,8 +53,8 @@ export const Home = () => {
 	const generateButtonsHTML = (fileIds, className) => {
 		return `<!-- wp:buttons{"layout":{"type":"flex","justifyContent":"center","orientation":"vertical"}}-->\n <div class="wp-block-buttons">\n${fileIds
 			.map(
-				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Server ${index + 1}   </a></div>\n  <!--/wp:button-->`
-			).join("\n")}\n</div>\n<!--/wp:buttons-->`;
+				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Server ${index + 1}</a></div>\n  <!--/wp:button-->`
+			).join("\n")}\n<!--/wp:buttons-->`;
 	};
 
 	const copyToClipboard = (text) => {
@@ -104,8 +104,8 @@ export const Home = () => {
 		  
 			
 
-				<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
-					<h1 className="font-mono ">Find your movies</h1>
+			<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
+				<h1 className="font-mono ">Find your movies</h1>
 				
 
 				{error && (
