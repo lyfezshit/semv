@@ -56,6 +56,13 @@ export const Home = () => {
 				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Server ${index + 1}</a></div>\n  <!--/wp:button-->`
 			).join("\n")}\n<!--/wp:buttons-->`;
 	};
+	const generateButtonHTML = (fileIds, className) => {
+		return `<!-- wp:buttons{"layout":{"type":"flex","justifyContent":"center","orientation":"vertical"}}-->\n <div class="wp-block-buttons">\n${fileIds
+			.map(
+				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Episode ${index + 1}</a></div>\n  <!--/wp:button-->`
+			).join("\n")}\n</div>\n<!--/wp:buttons-->`;
+	};
+
 
 	const copyToClipboard = (text) => {
 		navigator.clipboard.writeText(text);
@@ -96,14 +103,8 @@ export const Home = () => {
 					</div>
 				</nav>
 		
-		<div className=" p-4 sm:p-10 flex flex-col items-center">
-			
-			
-			
-				
-		  
-			
-
+		<div className=" p-4 flex flex-col items-center">
+	
 			<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
 				<h1 className="font-mono ">Find your movies</h1>
 				
@@ -146,7 +147,7 @@ export const Home = () => {
 											type="submit"
 											className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
 										>
-											https://drive.google.com/uc?id=${fileId}&export=download
+											https://drive.google.com/uc?id=$%7BfileId%7D&export=download
 										</button>
 									))}
 								</div>
@@ -165,23 +166,38 @@ export const Home = () => {
 					
 				)}
 				</div>
-				<div className="grid grid-cols-1 mt-6 sm:grid-cols-2 gap-6">
-					{[
-						{ title: "Movie code", className: "movie-btn" },
-						{title:"Series code",className:"series-btn"}
-					].map(({ title, className }) => {
-						const html = data?.files ? generateButtonsHTML(data.files, className):"";
-						return (
-							<div key={title} className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
-								<h3 className="text-lg font-semibold tetx-gray-200 mb-2">{title}</h3>
-								<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={data?.files ? generateButtonsHTML(data.files,className):""} />
-								<button className="px-4 py-2bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-									onClick={() => copyToClipboard(data?.files ? generateButtonsHTML(data.files,className):"")}>Copy</button>
-							</div>
-						);
-					})}
-
+				
+			{type==="movie"	&& data?.files && (
+				<div className="flex items-center  mt-6  gap-6">
+					
+					<div className="  bg-slate-800 p-4 rounded-xl shadow-lg"  >
+						<h3 className=" text-lg font-semibold tetx-gray-200 mb-3">Movie Code</h3>
+						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"custom-class")} />
+						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
+									onClick={() => copyToClipboard( generateButtonsHTML(data.files,"custom-class"))}>Copy</button>
+					</div>
+					
+			    </div>	
+				)}
+				
+			{type==="series"&& data?.files&&(	
+				<div className="flex items-center mt-6  gap-6">
+						
+					<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
+							<h3 className="text-lg font-semibold tetx-gray-200 mb-2">
+								Series Code
+						</h3>
+						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"custom-class")} />
+				  		<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
+									onClick={() => copyToClipboard( generateButtonHTML(data.files,"custom-class"))}>Copy</button>
+					</div>
+						
 				</div>
+			)}
+
+
+
+
 			</div>
 		</div>
 	);
