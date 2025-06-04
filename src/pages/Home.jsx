@@ -73,7 +73,13 @@ export const Home = () => {
 	return (
 
 		<div className="min-h-screen bg-slate-900 text-gray-100 ">
-			<Toaster position="top-right" richColors expand={true} />
+			<Toaster theme="dark" position="top-left" richColors expand={true} toastOptions={{
+				style: {
+					marginTop: "3rem",
+					fontSize:"16px",
+				}
+			}}
+			closeButton/>
 		
 			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6">
 				<h1 className=" px-2 py-2 font-mono text-xl ">SEMV</h1>
@@ -169,33 +175,28 @@ export const Home = () => {
 				)}
 				</div>
 				
-			{type==="movie"	&& data?.files && (
+			{	data?.files && (
 				<div className="flex items-center  mt-6  gap-6">
 					
 					<div className="  bg-slate-800 p-4 rounded-xl shadow-lg"  >
 						<h3 className=" text-lg font-semibold tetx-gray-200 mb-3">Movie Code</h3>
-						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"custom-class")} />
+						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"movie-btn")} />
 						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-									onClick={() => copyToClipboard( generateButtonsHTML(data.files,"custom-class"))}>Copy</button>
+								onClick={() => copyToClipboard(generateButtonsHTML(data.files, "movie-btn"))}>Copy</button>
+						</div>
+						<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
+							<h3 className="text-lg font-semibold tetx-gray-200 mb-2">
+								Series Code
+						</h3>
+						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"series-btn")} />
+							<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
+								onClick={() => copyToClipboard(generateButtonHTML(data.files,"series-btn"))}>Copy</button>
 					</div>
 					
 			    </div>	
 				)}
 				
-			{type==="series"&& data?.files&&(	
-				<div className="flex items-center mt-6  gap-6">
-						
-					<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
-							<h3 className="text-lg font-semibold tetx-gray-200 mb-2">
-								Series Code
-						</h3>
-						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"custom-class")} />
-				  		<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-									onClick={() => copyToClipboard( generateButtonHTML(data.files,"custom-class"))}>Copy</button>
-					</div>
-						
-				</div>
-			)}
+			
 
 
 
