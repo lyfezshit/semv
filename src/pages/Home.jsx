@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster,toast } from "sonner";
 
 export const Home = () => {
 	const [postId, setPostId] = useState("");
@@ -13,7 +14,7 @@ export const Home = () => {
 		setIsLoading(true);
 
 		if (!postId.trim()) {
-			setError("Please enter a valid Post ID.");
+			toast.error("Please enter a valid Post ID.");
 			setIsLoading(false);
 			return;
 		}
@@ -66,12 +67,13 @@ export const Home = () => {
 
 	const copyToClipboard = (text) => {
 		navigator.clipboard.writeText(text);
-		alert("Code Copied to clipboard!")
+		toast.success("Code Copied to clipboard.");
 	};
 
 	return (
 
 		<div className="min-h-screen bg-slate-900 text-gray-100 ">
+			<Toaster position="top-right" richColors expand={true} />
 		
 			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6">
 				<h1 className=" px-2 py-2 font-mono text-xl ">SEMV</h1>
