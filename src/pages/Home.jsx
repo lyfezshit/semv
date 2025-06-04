@@ -35,10 +35,7 @@ export const Home = () => {
 			console.log("API Response:", result); // Log the raw API response to understand its structure.
 
 			if (!result) {
-				// The API returns `false` when no data is found for the Post ID.
-				// We throw an error here so it's caught by the catch block below,
-				// which will then call setError with an appropriate message.
-				// This centralizes error message handling in the catch block.
+				
 				throw new Error("No data found for this Post ID.");
 			}
 
@@ -52,6 +49,17 @@ export const Home = () => {
 		} finally {
 			setIsLoading(false); // Ensure loading state is reset whether the fetch succeeds or fails.
 		}
+	};
+	const generateButtonsHTML = (fileIds, className) => {
+		return `<!-- wp:buttons{"layout":{"type":"flex","justifyContent":"center","orientation":"vertical"}}-->\n <div class="wp-block-buttons">\n${fileIds
+			.map(
+				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Server ${index + 1}   </a></div>\n  <!--/wp:button-->`
+			).join("\n")}\n</div>\n<!--/wp:buttons-->`;
+	};
+
+	const copyToClipboard = (text) => {
+		navigator.clipboard.writeText(text);
+		alert("Code Copied to clipboard!")
 	};
 
 	return (
@@ -89,15 +97,14 @@ export const Home = () => {
 				</nav>
 		
 		<div className=" p-4 sm:p-10 flex flex-col items-center">
-			{/* The main header was removed as per previous comments. */}
-			{/* If a header is needed, it can be re-added here. */}
-			{/* e.g., <h1 className="text-3xl font-mono mb-8 text-emerald-400">🎬 Movie/Series Search</h1> */}
+			
+			
 			
 				
 		  
 			
 
-				<div className="w-full max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
+				<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
 					<h1 className="font-mono  text-gray-500">Find your movies</h1>
 				
 
@@ -112,22 +119,7 @@ export const Home = () => {
 					</p>
 				)}
 
-				{/* API response structure:
-                    For movies (from links.modpro.blog):
-                    {
-                        "title": "Movie Title",
-                        "files": ["google_drive_file_id_1", "google_drive_file_id_2"]
-                    }
-                    For series (from episodes.modpro.blog):
-                    {
-                        "title": "Series Title Ep Number",
-                        "files": ["google_drive_file_id_1"]
-                    }
-                    If not found, the API returns boolean `false`.
-                */}
-				{/* Note: Always check the API response structure (e.g., using browser developer tools or Postman)
-                    to ensure you are accessing the correct keys. Object keys are case-sensitive.
-                */}
+				
 
 				{data && (
 					<div className="mt-6 bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600">
@@ -141,7 +133,7 @@ export const Home = () => {
 						</p>
 
 						{data.files && data.files?.length > 0 ? (
-							<div>
+							<div >
 								<p className="text-lg font-semibold text-emerald-300 mb-3">
 									Google Drive Download Links:
 								</p>
@@ -159,15 +151,38 @@ export const Home = () => {
 									))}
 								</div>
 							</div>
+								
+								
 						) : (
 							<p className="mt-4 font-medium text-slate-400">
 								No downloadable files found for this entry.
 							</p>
 						)}
-					</div>
+						</div>
+						
+						
+				
+					
 				)}
+				</div>
+				<div className="grid grid-cols-1 mt-6 sm:grid-cols-2 gap-6">
+					{[
+						{ title: "Movie code", className: "movie-btn" },
+						{title:"Series code",className:"series-btn"}
+					].map(({ title, className }) => {
+						const html = data?.files ? generateButtonsHTML(data.files, className):"";
+						return (
+							<div key={title} className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
+								<h3 className="text-lg font-semibold tetx-gray-200 mb-2">{title}</h3>
+								<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={data?.files ? generateButtonsHTML(data.files,className):""} />
+								<button className="px-4 py-2bg-emerald-600 text-white rounded hover:bg-emerald-700 "
+									onClick={() => copyToClipboard(data?.files ? generateButtonsHTML(data.files,className):"")}>Copy</button>
+							</div>
+						);
+					})}
+
+				</div>
 			</div>
-			</div>
-			</div>
+		</div>
 	);
 };
