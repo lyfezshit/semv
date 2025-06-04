@@ -105,7 +105,7 @@ export const Home = () => {
 			
 
 				<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
-					<h1 className="font-mono  text-gray-500">Find your movies</h1>
+					<h1 className="font-mono ">Find your movies</h1>
 				
 
 				{error && (
