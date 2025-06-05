@@ -5,12 +5,33 @@ export const Home = () => {
 	const [postId, setPostId] = useState("");
 	const [type, setType] = useState("movie");
 	const [data, setData] = useState(null);
+	const [fileInfos, setFileInfos] = useState([]);
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+
+	const G_API_KEY = import.meta.env.VITE_G_API_KEY;
+	const MODPRO_API_KEY = import.meta.env.VITE_MODPRO_API_KEY;
+	
+
+	const fetchAllDriveFileInfo = async (fileIds) => {
+		const requests = fileIds.map((id) =>
+			fetch(`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,size,mimeType`)
+				.then((res) => {
+					if (!res.ok) throw new Error(`Failed to fetch ${id}`);
+					return res.json();
+				})
+				.catch(() => null)
+		);
+		const results = await Promise.all(requests);
+		setFileInfos(results.filter(Boolean));
+
+	}
+	
 
 	const fetchData = async () => {
 		setError("");
 		setData(null);
+		setFileInfos([]);
 		setIsLoading(true);
 
 		if (!postId.trim()) {
@@ -19,33 +40,32 @@ export const Home = () => {
 			return;
 		}
 
-		const API_KEY = "DEMOTEMPAPI"; // Reminder: Store API keys securely, not hardcoded in production.
+		// Reminder: Store API keys securely, not hardcoded in production.
 		const baseURL =
 			type === "movie"
 				? "https://links.modpro.blog/wp-json/wp/clenc/files"
 				: "https://episodes.modpro.blog/wp-json/wp/clenc/files";
 
 		try {
-			const url = `${baseURL}?api_key=${API_KEY}&files=${postId.trim()}`;
-			console.log("Request URL:", url); // Useful for debugging the exact URL being called.
-
+			const url = `${baseURL}?api_key=${MODPRO_API_KEY}&files=${postId.trim()}`;
 			const res = await fetch(url);
-			// It's good practice to check if the response was successful (e.g., res.ok)
-			// However, this specific API returns HTTP 200 with `false` in the body for "not found".
+			 if (res.status === 401) {
+      			throw new Error("Authentication failed - please check your API key");
+    				}
 			const result = await res.json();
-			console.log("API Response:", result); // Log the raw API response to understand its structure.
-
+			console.log("API result:", result);
 			if (!result) {
 				
 				throw new Error("No data found for this Post ID.");
 			}
 
-			setData(result); // Set the result directly. Ensure `result` structure matches what the UI expects.
+			setData(result); 
+			
+			if (result.files?.length > 0) {
+				await fetchAllDriveFileInfo(result.files);
+			}
 		} catch (err) {
-			console.error("Fetch error:", err); // Log the error for server-side or detailed client-side debugging.
-			// Log the full error object for more detailed debugging if needed.
-			// The err.message (e.g., "No data found for this Post ID.") will be displayed to the user.
-			console.log(err);
+			
 			setError(err.message || "Failed to fetch data. Please try again."); // Provide a user-friendly error message.
 		} finally {
 			setIsLoading(false); // Ensure loading state is reset whether the fetch succeeds or fails.
@@ -147,17 +167,36 @@ export const Home = () => {
 									Google Drive Download Links:
 								</p>
 								<div className="grid grid-cols-1 gap-3">
-									{/* The API returns an array of file IDs. We map over them to construct direct download links. */}
-									{/* Each link is a button; an onClick handler could be added later for copying the link or other actions. */}
-									{data.files.map((fileId, index) => (
-										<button
-											key={fileId}
-											type="submit"
-											className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
-										>
-											https://drive.google.com/uc?id=$%7BfileId%7D&export=download
-										</button>
-									))}
+									
+										{data.files.map((fileId) => {
+											const info = fileInfos.find((f) => f.id === fileId);
+											return (
+												<div key={fileId}>
+													<button
+													
+														type="submit"
+														className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
+													>
+														`https://drive.google.com/uc?id=${fileId}&export=download`
+													</button>
+													
+													{info && (
+														<div className="text-xs text-slate-300 mt-1 ml-2">
+															<p><strong>Name:</strong>{ info.name}</p>
+															<p><strong>Type:</strong>{ info.mimeType}</p>
+															<p><strong>Size:</strong>{ (info.size/1024/1024).toFixed(2)}MB</p>
+														</div>
+													)}
+												</div>
+											);
+
+												
+											
+											
+										
+										
+											
+										})}
 								</div>
 							</div>
 								
@@ -173,19 +212,19 @@ export const Home = () => {
 				
 					
 				)}
-				</div>
+			</div>
 				
 			{	data?.files && (
 				<div className="flex items-center  mt-6  gap-6">
 					
 					<div className="  bg-slate-800 p-4 rounded-xl shadow-lg"  >
-						<h3 className=" text-lg font-semibold tetx-gray-200 mb-3">Movie Code</h3>
+						<h3 className=" text-lg font-semibold text-gray-200 mb-3">Movie Code</h3>
 						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"movie-btn")} />
 						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
 								onClick={() => copyToClipboard(generateButtonsHTML(data.files, "movie-btn"))}>Copy</button>
 						</div>
 						<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
-							<h3 className="text-lg font-semibold tetx-gray-200 mb-2">
+							<h3 className="text-lg font-semibold text-gray-200 mb-2">
 								Series Code
 						</h3>
 						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"series-btn")} />
