@@ -15,7 +15,7 @@ export const Home = () => {
 
 	const fetchAllDriveFileInfo = async (fileIds) => {
 		const requests = fileIds.map((id) =>
-			fetch(`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,size,mimeType`)
+			fetch(`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,size,mimeType,webContentLink`)
 				.then((res) => {
 					if (!res.ok) throw new Error(`Failed to fetch ${id}`);
 					return res.json();
@@ -171,32 +171,23 @@ export const Home = () => {
 										{data.files.map((fileId) => {
 											const info = fileInfos.find((f) => f.id === fileId);
 											return (
+												
 												<div key={fileId}>
 													<button
 													
 														type="submit"
 														className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
 													>
-														`https://drive.google.com/uc?id=${fileId}&export=download`
+														{`https://drive.google.com/uc?id=${fileId}&export=download`}
 													</button>
 													
-													{info && (
-														<div className="text-xs text-slate-300 mt-1 ml-2">
-															<p><strong>Name:</strong>{ info.name}</p>
-															<p><strong>Type:</strong>{ info.mimeType}</p>
-															<p><strong>Size:</strong>{ (info.size/1024/1024).toFixed(2)}MB</p>
-														</div>
-													)}
+													
 												</div>
-											);
-
 												
-											
-											
-										
-										
+											);
 											
 										})}
+										
 								</div>
 							</div>
 								
@@ -206,15 +197,11 @@ export const Home = () => {
 								No downloadable files found for this entry.
 							</p>
 						)}
-						</div>
-						
-						
-				
-					
+					</div>
 				)}
 			</div>
 				
-			{	data?.files && (
+			{data?.files && (
 				<div className="flex items-center  mt-6  gap-6">
 					
 					<div className="  bg-slate-800 p-4 rounded-xl shadow-lg"  >
@@ -226,7 +213,7 @@ export const Home = () => {
 						<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
 							<h3 className="text-lg font-semibold text-gray-200 mb-2">
 								Series Code
-						</h3>
+						    </h3>
 						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"series-btn")} />
 							<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
 								onClick={() => copyToClipboard(generateButtonHTML(data.files,"series-btn"))}>Copy</button>
@@ -234,6 +221,32 @@ export const Home = () => {
 					
 			    </div>	
 				)}
+				
+				{fileInfos.length > 0 && (
+					<div className="mt-8 w-full max-w-4xl bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-600">
+							<h3 className="text-xl font-semibold text-emerald-300 mb-4">Google Drive File Details:</h3>
+							<div className="space-y-4">
+								{fileInfos.map((info, idx) => (
+									<div key={info.id} className="p-4 bg-slate-700 rounded-lg border border-slate-600">
+										<p><strong>Server{ idx+1}</strong></p>
+										<p><strong>Name:</strong>{ info.name}</p>
+										<p><strong>Size:</strong>{ (info.size/1024/1024).toFixed(2)}MB</p>
+										<p><strong>Type:</strong>{info.mimeType}</p>
+										<p><strong>Link</strong><a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">Open</a></p>
+									</div>
+								))}
+								
+							</div>
+						</div>
+					
+			   )}		
+													
+						
+					
+				
+					
+													
+				
 				
 			
 
