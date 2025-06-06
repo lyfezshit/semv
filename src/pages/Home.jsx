@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Toaster,toast } from "sonner";
 
 export const Home = () => {
@@ -146,9 +147,10 @@ export const Home = () => {
 			}
 		} catch (err) {
 			
-			setError(err.message || "Failed to fetch data. Please try again."); // Provide a user-friendly error message.
+			setError(err.message || "Failed to fetch data. Please try again."); 
 		} finally {
 			setIsLoading(false); // Ensure loading state is reset whether the fetch succeeds or fails.
+			setIsLoading(false); 
 		}
 	}
 };
@@ -219,8 +221,8 @@ export const Home = () => {
 		
 		<div className=" p-4 flex flex-col items-center">
 	
-			<div className=" flex flex-col items-center max-w-lg p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl">
-				<h1 className="font-mono ">Find your movies</h1>
+			<div className=" w-full max-w-lg min-h-0 p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl transition-all duration-300 ease-in-out">
+				<h1 className="font-mono text-xl text-center mb-4 ">Find your movies</h1>
 				
 
 				{error && (
@@ -234,59 +236,60 @@ export const Home = () => {
 					</p>
 				)}
 
-				
+				<div className="space-y-4">
 
-				{data && (
-					<div className="mt-6 bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600">
-						<h2 className="text-2xl font-bold text-emerald-400 mb-2">
-							{data.title}
-						</h2>
-							
-							<p className="font-medium text-slate-300 mb-4">
-								<strong>Post ID:</strong> {postId}
-							</p>
+					{data && (
+						<div className="m bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600 break-words overflow-auto max-h-[75vh]">
+							<h2 className="text-2xl font-bold text-emerald-400 truncate">
+								{data.title}
+							</h2>
 								
-
-						
-
-						{data.files && data.files?.length > 0 ? (
-							<div >
-								<p className="text-lg font-semibold text-emerald-300 mb-3">
-									Google Drive Download Links:
+								<p className="font-medium text-slate-300 mb-4">
+									<strong>Post ID:</strong> {postId}
 								</p>
-								<div className="grid grid-cols-1 gap-3">
 									
-										{data.files.map((fileId) => {
-											const info = fileInfos.find((f) => f.id === fileId);
-											return (
-												
-												<div key={fileId}>
-													<button
-													
-														type="submit"
-														className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
-													>
-														{`https://drive.google.com/uc?id=${fileId}&export=download`}
-													</button>
-													
-													
-												</div>
-												
-											);
-											
-										})}
+
+							
+
+							{data.files && data.files?.length > 0 ? (
+								<div >
+									<p className="text-lg font-semibold text-emerald-300 mb-3">
+										Google Drive Download Links:
+									</p>
+									<div className="mt-4 space-y-2">
 										
+											{data.files.map((fileId) => {
+												const info = fileInfos.find((f) => f.id === fileId);
+												return (
+													
+													<div key={fileId}>
+														<button
+														
+															type="submit"
+															className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
+														>
+															{`https://drive.google.com/uc?id=${fileId}&export=download`}
+														</button>
+														
+														
+													</div>
+													
+												);
+												
+											})}
+										
+									</div>
 								</div>
-							</div>
 								
 								
-						) : (
-							<p className="mt-4 font-medium text-slate-400">
-								No downloadable files found for this entry.
-							</p>
+								) : (
+									<p className="mt-4 font-medium text-slate-400">
+									No downloadable files found for this entry.
+									</p>
+								)}
+						</div>
 						)}
-					</div>
-				)}
+				</div>
 			</div>
 				
 			{data?.files && (
@@ -297,14 +300,12 @@ export const Home = () => {
 						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"movie-btn")} />
 						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
 								onClick={() => copyToClipboard(generateButtonsHTML(data.files, "movie-btn"))}>Copy</button>
-						</div>
-						<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
-							<h3 className="text-lg font-semibold text-gray-200 mb-2">
-								Series Code
-						    </h3>
+					</div>
+					<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
+						<h3 className="text-lg font-semibold text-gray-200 mb-2">Series Code</h3>
 						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"series-btn")} />
-							<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-								onClick={() => copyToClipboard(generateButtonHTML(data.files,"series-btn"))}>Copy</button>
+						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
+							onClick={() => copyToClipboard(generateButtonHTML(data.files,"series-btn"))}>Copy</button>
 					</div>
 					
 			    </div>	
@@ -313,7 +314,7 @@ export const Home = () => {
 				{fileInfos.length > 0 && (
 					<div className="mt-8 w-full max-w-4xl bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-600">
 							<h3 className="text-xl font-semibold text-emerald-300 mb-4">Google Drive File Details:</h3>
-							<div className="space-y-4">
+							<div className="space-y-4 overflow-clip ">
 								{fileInfos.map((info, idx) => (
 									<div key={info.id} className="p-4 bg-slate-700 rounded-lg border border-slate-600">
 										<p><strong>Server{ idx+1}</strong></p>
@@ -325,20 +326,9 @@ export const Home = () => {
 								))}
 								
 							</div>
-						</div>
+					</div>
 					
-			   )}		
-													
-						
-					
-				
-					
-													
-				
-				
-			
-
-
+			   )}
 
 
 			</div>
