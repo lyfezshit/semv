@@ -15,7 +15,7 @@ export const Home = () => {
 
 	const fetchAllDriveFileInfo = async (fileIds) => {
 		const requests = fileIds.map((id) =>
-			fetch(`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,size,mimeType,webContentLink`)
+			fetch(`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,size,mimeType,webContentLink&supportsAllDrives=true&includeItemsFromAllDrives=true`)
 				.then((res) => {
 					if (!res.ok) throw new Error(`Failed to fetch ${id}`);
 					return res.json();
