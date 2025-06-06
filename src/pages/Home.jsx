@@ -272,14 +272,22 @@ export const Home = () => {
 													
 													<div key={fileId}>
 														<a
-														
-															type="submit"
+															href="#"
+															 onClick={(e) => {
+																	e.preventDefault(); 
+																	const downloadLink = `https://drive.google.com/uc?id=${fileId}&export=download`;
+																	navigator.clipboard.writeText(downloadLink)
+																		.then(() => {
+																			toast.success("Link copied to clipboard!");
+																		})
+																		.catch(() => {
+																			toast.error("Failed to copy link.");
+																		});
+																	}}
 															className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
 														>
 															{`https://drive.google.com/uc?id=${fileId}&export=download`}
-														</a>
-														
-														
+														</a>	
 													</div>
 													
 												);
