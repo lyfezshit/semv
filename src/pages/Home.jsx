@@ -220,9 +220,7 @@ export const Home = () => {
 		
 		<div className=" p-4 flex flex-col items-center">
 	
-			<div className=" w-full max-w-lg min-h-0 p-6 sm:p-8 bg-slate-800 rounded-xl shadow-2xl transition-all duration-300 ease-in-out">
-				<h1 className="font-mono text-xl text-center mb-4 ">Find your movies</h1>
-				
+			<div>
 
 				{error && (
 					<p className="text-red-300 p-3 mb-6 bg-red-700/30 border border-red-600 rounded-lg text-sm">
@@ -244,8 +242,19 @@ export const Home = () => {
 							</h2>
 								
 								<p className="font-medium text-slate-300 mb-4">
-									<strong>Post ID:</strong> {postId}
-								</p>
+									<strong>Post ID:</strong> {
+																						
+										type === "drive" ? (
+											postId
+										) : type === "movie" ? (
+											`https://links.modpro.blog/${postId}`
+										) : type === "series" ? (
+											`https://episodes.modpro.blog/${postId}`
+										) : (
+											postId
+										)
+
+									} </p>
 									
 
 							
@@ -262,13 +271,13 @@ export const Home = () => {
 												return (
 													
 													<div key={fileId}>
-														<button
+														<a
 														
 															type="submit"
 															className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
 														>
 															{`https://drive.google.com/uc?id=${fileId}&export=download`}
-														</button>
+														</a>
 														
 														
 													</div>
