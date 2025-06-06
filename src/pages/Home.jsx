@@ -12,6 +12,8 @@ export const Home = () => {
 	const G_API_KEY = import.meta.env.VITE_G_API_KEY;
 	const MODPRO_API_KEY = import.meta.env.VITE_MODPRO_API_KEY;
 	
+	
+	
 
 	const fetchAllDriveFileInfo = async (fileIds) => {
 		const requests = fileIds.map((id) =>
@@ -25,7 +27,81 @@ export const Home = () => {
 		const results = await Promise.all(requests);
 		setFileInfos(results.filter(Boolean));
 
-	}
+	};
+	const extractDriveId = (input) => {
+		if (!input) return null;
+		if (!input.includes("/")) return input;
+
+		const match = input.match(/[-\w]{25,}/);
+		return match ? match[0] : null;
+		
+	};
+	const fetchDriveItemInfo = async (input) => {
+		setError("");
+		setData(null);
+		setFileInfos([]);
+		setIsLoading(true);
+
+		const id = extractDriveId(input);
+		if (!id) {
+			setError("Invalid Google Drive URL or ID.");
+			setIsLoading(false);
+			return;
+		}
+		try {
+      
+			const metaRes = await fetch(
+				`https://www.googleapis.com/drive/v3/files/${id}?key=${G_API_KEY}&fields=id,name,mimeType,size,webContentLink&supportsAllDrives=true&includeItemsFromAllDrives=true`
+			);
+
+			if (!metaRes.ok) {
+				throw new Error("Failed to fetch file/folder metadata.");
+			}
+			const meta = await metaRes.json();
+
+			if (meta.mimeType === "application/vnd.google-apps.folder") {
+        
+				const folderFiles = await fetchFolderContents(id);
+				if (folderFiles.length === 0) {
+					setError("Folder is empty or access denied.");
+					setIsLoading(false);
+					return;
+				}
+				setData({ title: meta.name, files: folderFiles.map((f) => f.id) });
+				setFileInfos(folderFiles);
+			} else {
+        
+				setData({ title: meta.name, files: [meta.id] });
+				setFileInfos([meta]);
+			}
+		} catch (err) {
+			setError(err.message || "Failed to fetch Google Drive data.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+ 
+	const fetchFolderContents = async (folderId) => {
+		const files = [];
+		let pageToken = null;
+
+		do {
+			const url = new URL(
+				`https://www.googleapis.com/drive/v3/files?key=${G_API_KEY}&fields=nextPageToken,files(id,name,mimeType,size,webContentLink)&q='${folderId}'+in+parents&supportsAllDrives=true&includeItemsFromAllDrives=true`
+			);
+			if (pageToken) {
+				url.searchParams.append("pageToken", pageToken);
+			}
+			const res = await fetch(url);
+			if (!res.ok) throw new Error("Failed to fetch folder contents");
+			const json = await res.json();
+			files.push(...json.files);
+			pageToken = json.nextPageToken;
+		} while (pageToken);
+
+		return files;
+	};
 	
 
 	const fetchData = async () => {
@@ -35,12 +111,16 @@ export const Home = () => {
 		setIsLoading(true);
 
 		if (!postId.trim()) {
-			toast.error("Please enter a valid Post ID.");
+			toast.error("Please enter a valid Url or ID.");
 			setIsLoading(false);
 			return;
 		}
 
-		// Reminder: Store API keys securely, not hardcoded in production.
+
+		if (type === "drive") {
+			await fetchDriveItemInfo(postId);
+		} else
+		{ 
 		const baseURL =
 			type === "movie"
 				? "https://links.modpro.blog/wp-json/wp/clenc/files"
@@ -49,9 +129,9 @@ export const Home = () => {
 		try {
 			const url = `${baseURL}?api_key=${MODPRO_API_KEY}&files=${postId.trim()}`;
 			const res = await fetch(url);
-			 if (res.status === 401) {
-      			throw new Error("Authentication failed - please check your API key");
-    				}
+			if (res.status === 401) {
+				throw new Error("Authentication failed - please check your API key");
+			}
 			const result = await res.json();
 			console.log("API result:", result);
 			if (!result) {
@@ -59,7 +139,7 @@ export const Home = () => {
 				throw new Error("No data found for this Post ID.");
 			}
 
-			setData(result); 
+			setData(result);
 			
 			if (result.files?.length > 0) {
 				await fetchAllDriveFileInfo(result.files);
@@ -70,7 +150,8 @@ export const Home = () => {
 		} finally {
 			setIsLoading(false); // Ensure loading state is reset whether the fetch succeeds or fails.
 		}
-	};
+	}
+};
 	const generateButtonsHTML = (fileIds, className) => {
 		return `<!-- wp:buttons{"layout":{"type":"flex","justifyContent":"center","orientation":"vertical"}}-->\n <div class="wp-block-buttons">\n${fileIds
 			.map(
@@ -111,12 +192,17 @@ export const Home = () => {
 					>
 						<option value="movie">Movie</option>
 						<option value="series">Series</option>
+						<option value="drive">Google Drive</option>
 					</select>
 
 					<input
 						className=" px-4 py-2 rounded-lg  bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
 						type="text"
-						placeholder="Enter post ID..."
+						placeholder={
+							type === "drive"
+								? "Enter Drive file or folder Url..."
+								:"Enter post ID..."
+						}
 						value={postId}
 						onChange={(e) => setPostId(e.target.value)}
 					/>
@@ -155,11 +241,13 @@ export const Home = () => {
 						<h2 className="text-2xl font-bold text-emerald-400 mb-2">
 							{data.title}
 						</h2>
-						{/* The API response for these endpoints does not include a 'year' attribute. */}
+							
+							<p className="font-medium text-slate-300 mb-4">
+								<strong>Post ID:</strong> {postId}
+							</p>
+								
 
-						<p className="font-medium text-slate-300 mb-4">
-							<strong>Post ID:</strong> {postId}
-						</p>
+						
 
 						{data.files && data.files?.length > 0 ? (
 							<div >
@@ -232,7 +320,7 @@ export const Home = () => {
 										<p><strong>Name:</strong>{ info.name}</p>
 										<p><strong>Size:</strong>{ (info.size/1024/1024).toFixed(2)}MB</p>
 										<p><strong>Type:</strong>{info.mimeType}</p>
-										<p><strong>Link</strong><a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">Open</a></p>
+										<p><strong>Link:</strong><a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">Click Here</a></p>
 									</div>
 								))}
 								
