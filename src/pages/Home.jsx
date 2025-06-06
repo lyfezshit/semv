@@ -149,7 +149,6 @@ export const Home = () => {
 			
 			setError(err.message || "Failed to fetch data. Please try again."); 
 		} finally {
-			setIsLoading(false); // Ensure loading state is reset whether the fetch succeeds or fails.
 			setIsLoading(false); 
 		}
 	}
