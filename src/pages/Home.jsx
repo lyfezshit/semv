@@ -185,168 +185,134 @@ export const Home = () => {
 		
 			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6">
 				<h1 className=" px-2 py-2 font-mono text-xl ">SEMV</h1>
-				<div className="flex items-center gap-4">
-					<select
-						value={type}
-						onChange={(e) => setType(e.target.value)}
-						className="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-					>
-						<option value="movie">Movie</option>
-						<option value="series">Series</option>
-						<option value="drive">Google Drive</option>
-					</select>
+				<div className="flex items-center px-2 py-2 rounded-lg bg-slate-700 border border-slate-600 focus-ring-2  ">
 
-					<input
-						className=" px-4 py-2 rounded-lg  bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-						type="text"
-						placeholder={
-							type === "drive"
-								? "Enter Drive file or folder Url..."
-								:"Enter post ID..."
-						}
-						value={postId}
-						onChange={(e) => setPostId(e.target.value)}
-					/>
-
-					<button
-						className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors duration-150"
-						onClick={fetchData}
-						disabled={isLoading}
-					>
-						{isLoading ? "Searching..." : "Search"}
-					</button>
+					<div className="flex items-center gap-4">
+						<input
+							className=" px-4 py-2 rounded-lg  bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+							type="text"
+							placeholder={
+								type === "drive"
+									? "Enter Drive file or folder Url..."
+									:"Enter post ID..."
+							}
+							value={postId}
+							onChange={(e) => setPostId(e.target.value)}
+						/>
+						<select
+							value={type}
+							onChange={(e) => setType(e.target.value)}
+							className="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+						>
+							<option value="movie">Movie</option>
+							<option value="series">Series</option>
+							<option value="drive">Google Drive</option>
+						</select>
+						<button
+							className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors duration-150"
+							onClick={fetchData}
+							disabled={isLoading}
+						>
+							{isLoading ? "Searching..." : "Search"}
+						</button>
 					</div>
-				</nav>
-		
-		<div className=" p-4 flex flex-col items-center">
-	
-			<div>
-
+				</div>
+			</nav>
+			<div className="p-4 flex flex-col items-center">
 				{error && (
 					<p className="text-red-300 p-3 mb-6 bg-red-700/30 border border-red-600 rounded-lg text-sm">
 						{error}
 					</p>
 				)}
 				{isLoading && !data && (
-					<p className="text-emerald-400 py-4 text-center">
-						Loading data, please wait...
-					</p>
+					<p className="text-emerald-400 py-4 text-center">Loading data, please wait...</p>
 				)}
 
-				<div className="space-y-4">
-
-					{data && (
-						<div className="m bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600 break-words overflow-auto max-h-[75vh]">
-							<h2 className="text-2xl font-bold text-emerald-400 truncate">
-								{data.title}
-							</h2>
-								
-								<p className="font-medium text-slate-300 mb-4">
-									<strong>Post ID:</strong> {
-																						
-										type === "drive" ? (
-											postId
-										) : type === "movie" ? (
-											`https://links.modpro.blog/${postId}`
-										) : type === "series" ? (
-											`https://episodes.modpro.blog/${postId}`
-										) : (
-											postId
-										)
-
-									} </p>
-									
-
-							
-
-							{data.files && data.files?.length > 0 ? (
-								<div >
-									<p className="text-lg font-semibold text-emerald-300 mb-3">
-										Google Drive Download Links:
+				<div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl">
+					<div className="lg:w-2/3 space-y-4">
+						{data && (
+							<div className="bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600 max-h-[75vh] flex flex-col">
+								<div className="shrink-0 mb-4">
+									<h2 className="text-2xl font-bold text-emerald-400 truncate">{data.title}</h2>
+									<p className="font-medium text-slate-300">
+										<strong>Post ID:</strong>{" "}
+										{type === "drive"
+											? postId
+											: type === "movie"
+											? `https://links.modpro.blog/${postId}`
+											: type === "series"
+											? `https://episodes.modpro.blog/${postId}`
+											: postId}
 									</p>
-									<div className="mt-4 space-y-2">
-										
-											{data.files.map((fileId) => {
-												const info = fileInfos.find((f) => f.id === fileId);
-												return (
-													
-													<div key={fileId}>
-														<a
-															href="#"
-															 onClick={(e) => {
-																	e.preventDefault(); 
-																	const downloadLink = `https://drive.google.com/uc?id=${fileId}&export=download`;
-																	navigator.clipboard.writeText(downloadLink)
-																		.then(() => {
-																			toast.success("Link copied to clipboard!");
-																		})
-																		.catch(() => {
-																			toast.error("Failed to copy link.");
-																		});
-																	}}
-															className="block w-full px-4 py-3 bg-slate-600 hover:bg-emerald-600 text-slate-100 hover:text-white rounded-lg border border-slate-500 hover:border-emerald-500 transition-all duration-200 text-sm truncate"
-														>
-															{`https://drive.google.com/uc?id=${fileId}&export=download`}
-														</a>	
-													</div>
-													
-												);
-												
-											})}
-										
-									</div>
 								</div>
-								
-								
+
+								{fileInfos.length > 0 ? (
+									<div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-600 space-y-4 overflow-y-auto">
+										<h3 className="text-xl font-semibold text-emerald-300 mb-4">
+											Google Drive File Details:
+										</h3>
+										{fileInfos.map((info, idx) => (
+											<div key={info.id} className="p-4 bg-slate-700 rounded-lg border border-slate-600">
+												<p><strong>Server {idx + 1}</strong></p>
+												<p><strong>Name:</strong> {info.name}</p>
+												<p><strong>Size:</strong> {(info.size / 1024 / 1024).toFixed(2)} MB</p>
+												<p><strong>Type:</strong> {info.mimeType}</p>
+												<p>
+													<strong>Link:</strong>{" "}
+													<a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">
+														Click Here
+													</a>
+												</p>
+											</div>
+										))}
+									</div>
 								) : (
 									<p className="mt-4 font-medium text-slate-400">
-									No downloadable files found for this entry.
+										No downloadable files found for this entry.
 									</p>
 								)}
-						</div>
-						)}
-				</div>
-			</div>
-				
-			{data?.files && (
-				<div className="flex items-center  mt-6  gap-6">
-					
-					<div className="  bg-slate-800 p-4 rounded-xl shadow-lg"  >
-						<h3 className=" text-lg font-semibold text-gray-200 mb-3">Movie Code</h3>
-						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonsHTML(data.files,"movie-btn")} />
-						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-								onClick={() => copyToClipboard(generateButtonsHTML(data.files, "movie-btn"))}>Copy</button>
-					</div>
-					<div  className="bg-slate-800 p-4 rounded-xl shadow-lg"  >
-						<h3 className="text-lg font-semibold text-gray-200 mb-2">Series Code</h3>
-						<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2" readOnly value={ generateButtonHTML(data.files,"series-btn")} />
-						<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 "
-							onClick={() => copyToClipboard(generateButtonHTML(data.files,"series-btn"))}>Copy</button>
-					</div>
-					
-			    </div>	
-				)}
-				
-				{fileInfos.length > 0 && (
-					<div className="mt-8 w-full max-w-4xl bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-600">
-							<h3 className="text-xl font-semibold text-emerald-300 mb-4">Google Drive File Details:</h3>
-							<div className="space-y-4 overflow-clip ">
-								{fileInfos.map((info, idx) => (
-									<div key={info.id} className="p-4 bg-slate-700 rounded-lg border border-slate-600">
-										<p><strong>Server{ idx+1}</strong></p>
-										<p><strong>Name:</strong>{ info.name}</p>
-										<p><strong>Size:</strong>{ (info.size/1024/1024).toFixed(2)}MB</p>
-										<p><strong>Type:</strong>{info.mimeType}</p>
-										<p><strong>Link:</strong><a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">Click Here</a></p>
-									</div>
-								))}
-								
 							</div>
+						)}
 					</div>
-					
-			   )}
 
+					{data?.files && (
+						<div className="lg:w-1/3 flex flex-col gap-6">
+							<div className="bg-slate-800 p-4 rounded-xl shadow-lg">
+								<h3 className="text-lg font-semibold text-gray-200 mb-3">Movie Code</h3>
+								<textarea
+									className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2"
+									readOnly
+									value={generateButtonsHTML(data.files, "movie-btn")}
+								/>
+								<button
+									className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+									onClick={() =>
+										copyToClipboard(generateButtonsHTML(data.files, "movie-btn"))
+									}
+								>
+									Copy
+								</button>
+							</div>
 
+							<div className="bg-slate-800 p-4 rounded-xl shadow-lg">
+								<h3 className="text-lg font-semibold text-gray-200 mb-2">Series Code</h3>
+								<textarea
+									className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2"
+									readOnly
+									value={generateButtonHTML(data.files, "series-btn")}
+								/>
+								<button
+									className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+									onClick={() =>
+										copyToClipboard(generateButtonHTML(data.files, "series-btn"))
+									}
+								>
+									Copy
+								</button>
+							</div>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
