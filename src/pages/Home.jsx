@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Search } from "lucide-react";
 
 import { Toaster,toast } from "sonner";
 
@@ -183,13 +184,13 @@ export const Home = () => {
 			}}
 			closeButton/>
 		
-			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6">
-				<h1 className=" px-2 py-2 font-mono text-xl ">SEMV</h1>
-				<div className="flex items-center px-2 py-2 rounded-lg bg-slate-700 border border-slate-600 focus-ring-2  ">
-
-					<div className="flex items-center gap-4">
+			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6 px-4">
+				<h1 className="  font-serif text-xl ">SEMV</h1>
+				<div className=" flex-grow flex  items-center  justify-end  ">
+					<div className="flex items-center rounded-lg border border-slate-600 px-3 py-2 gap-4">
+						
 						<input
-							className=" px-4 py-2 rounded-lg  bg-slate-700 border border-slate-600 text-gray-200 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+							className="flex-grow bg-transparent border-none  text-gray-200 placeholder-slate-400  outline-none"
 							type="text"
 							placeholder={
 								type === "drive"
@@ -202,18 +203,24 @@ export const Home = () => {
 						<select
 							value={type}
 							onChange={(e) => setType(e.target.value)}
-							className="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+							className="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
 						>
 							<option value="movie">Movie</option>
 							<option value="series">Series</option>
 							<option value="drive">Google Drive</option>
 						</select>
+					
 						<button
 							className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors duration-150"
 							onClick={fetchData}
 							disabled={isLoading}
 						>
-							{isLoading ? "Searching..." : "Search"}
+							{isLoading ? ("Searching...") : (
+								<>
+									<Search size={18} />
+									
+								</>
+							)}
 						</button>
 					</div>
 				</div>
@@ -234,7 +241,7 @@ export const Home = () => {
 							<div className="bg-slate-700/50 p-4 sm:p-6 rounded-lg shadow-md border border-slate-600 max-h-[75vh] flex flex-col">
 								<div className="shrink-0 mb-4">
 									<h2 className="text-2xl font-bold text-emerald-400 truncate">{data.title}</h2>
-									<p className="font-medium text-slate-300">
+									<p className="font-medium text-slate- overflow-clip">
 										<strong>Post ID:</strong>{" "}
 										{type === "drive"
 											? postId
@@ -252,14 +259,31 @@ export const Home = () => {
 											Google Drive File Details:
 										</h3>
 										{fileInfos.map((info, idx) => (
-											<div key={info.id} className="p-4 bg-slate-700 rounded-lg border border-slate-600">
+											<div key={info.id}   onClick={() => {
+													const textToCopy = `
+														Server ${idx + 1}
+															Name: ${info.name}
+															Size: ${(info.size / 1024 / 1024 / 1024).toFixed(2)} GB
+															Type: ${info.mimeType}
+															Link: ${info.webContentLink}
+																`.trim();
+
+														navigator.clipboard.writeText(textToCopy)
+														.then(() => {
+															toast.success('Info copied to clipboard!');
+														})
+														.catch((err) => {
+															toast.error('Failed to copy:', err);
+														});
+													}}
+												className="p-4 bg-slate-700 rounded-lg border border-slate-600 ">
 												<p><strong>Server {idx + 1}</strong></p>
 												<p><strong>Name:</strong> {info.name}</p>
-												<p><strong>Size:</strong> {(info.size / 1024 / 1024).toFixed(2)} MB</p>
+												<p><strong>Size:</strong> {(info.size / 1024 / 1024 / 1024).toFixed(2)} GB</p>
 												<p><strong>Type:</strong> {info.mimeType}</p>
 												<p>
 													<strong>Link:</strong>{" "}
-													<a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline">
+													<a href={info.webContentLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline" onClick={(e)=>e.stopPropagation()}>
 														Click Here
 													</a>
 												</p>
