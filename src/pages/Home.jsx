@@ -166,6 +166,12 @@ export const Home = () => {
 				(id, index) => `<!--wp:buttons{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Episode ${index + 1}</a></div>\n  <!--/wp:button-->`
 			).join("\n")}\n</div>\n<!--/wp:buttons-->`;
 	};
+	const generateBtnHTML = (fileIds, className) => {
+		return `<!-- wp:buttons{"layout":{"type":"flex","justifyContent":"center","orientation":"horizontal"}}-->\n <div class="wp-block-buttons">\n${fileIds
+			.map(
+				(id, index) => `<!--wp:button{"className":"${className}"}-->\n <div class="wp-block-button ${className}"><a class="wp-block-button__link wp-element-button" href=\"https://drive.google.com/uc?id=${id}&export=download\" target=\"_blank\" rel=\"noreferrer noopener nofollow\">Server ${index + 1}</a></div>\n  <!--/wp:button-->`
+			).join("\n")}\n</div>\n<!--/wp:buttons-->`;
+	}
 
 
 	const copyToClipboard = (text) => {
@@ -333,6 +339,22 @@ export const Home = () => {
 								>
 									Copy
 								</button>
+
+							</div>
+							<div className="bg-slate-800 p-4 rounded-xl shadow-lg">
+								<h3 className="text-lg font-semibold text-gray-200 mb-2">Zip Code</h3>
+								<textarea className="w-full h-40 p-2 text-sm text-gray-200 bg-slate-700 border border-slate-600 rounded resize-none mb-2"
+									readOnly
+									value={generateBtnHTML(data.files,"zip-btn") }
+								></textarea>
+								<button className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+									onClick={ ()=> copyToClipboard(generateBtnHTML(data.files,"zip-btn"))}
+								>
+									Copy
+
+								</button>
+
+
 							</div>
 						</div>
 					)}
