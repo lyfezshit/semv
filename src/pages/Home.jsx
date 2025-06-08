@@ -39,10 +39,7 @@ export const Home = () => {
 		
 	};
 	const fetchDriveItemInfo = async (input) => {
-		setError("");
-		setData(null);
-		setFileInfos([]);
-		setIsLoading(true);
+		
 
 		const id = extractDriveId(input);
 		if (!id) {
@@ -181,7 +178,7 @@ export const Home = () => {
 
 	return (
 
-		<div className="min-h-screen bg-slate-900 text-gray-100 ">
+		<div className=" w-full min-h-screen overflow-x-hidden bg-slate-900 text-gray-100  ">
 			<Toaster theme="dark" position="top-left" richColors expand={true} toastOptions={{
 				style: {
 					marginTop: "3rem",
@@ -191,7 +188,7 @@ export const Home = () => {
 			closeButton/>
 		
 			<nav className="w-full py-3  bg-slate-700 flex  items-center justify-between gap-6 mb-6 px-4">
-				<h1 className="  font-serif text-xl ">SEMV</h1>
+				<h1 className="font-mono text-xl ">ExtDrama</h1>
 				<div className=" flex-grow flex  items-center  justify-end  ">
 					<div className="flex items-center rounded-lg border border-slate-600 px-3 py-2 gap-4">
 						
@@ -282,7 +279,7 @@ export const Home = () => {
 															toast.error('Failed to copy:', err);
 														});
 													}}
-												className="p-4 bg-slate-700 rounded-lg border border-slate-600 ">
+												className="p-4 bg-slate-700 rounded-lg border border-slate-600 overflow-clip">
 												<p><strong>Server {idx + 1}</strong></p>
 												<p><strong>Name:</strong> {info.name}</p>
 												<p><strong>Size:</strong> {(info.size / 1024 / 1024 / 1024).toFixed(2)} GB</p>
